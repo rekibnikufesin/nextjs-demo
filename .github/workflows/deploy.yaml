@@ -19,7 +19,7 @@ jobs:
       - name: Lint
         run: npm run lint
       - name: Build
-        run: rpm run export
+        run: npm run export
       - uses: jakejarvis/s3-sync-action@master
         with:
           args: --acl public-read --delete
