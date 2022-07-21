@@ -16,10 +16,13 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-region: "us-west-2"
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      - run: npm install
+      - name: Install Pulumi
+        working-directory: infra
+        run: npm install
       - uses: pulumi/actions@v3
         with:
           command: preview
-          stack-name: dev
+          stack-name: prod
+          work-dir: infra
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
