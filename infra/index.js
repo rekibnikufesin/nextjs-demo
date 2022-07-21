@@ -40,3 +40,4 @@ let bucketPolicy = new aws.s3.BucketPolicy("bucketPolicy", {
 })
 
 exports.websiteUrl = siteBucket.websiteEndpoint
+exports.bucketName = siteBucket.bucket
