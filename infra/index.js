@@ -43,13 +43,15 @@ const bucketPolicy = new aws.s3.BucketPolicy("bucketPolicy", {
 })
 
 // Cloudflare DNS
-const cloudflareZone = cloudflare.Zone.get(siteDomain)
+const cloudflareZone = cloudflare.getZone({
+  name: siteDomain
+})
 
 const rootDNS = new cloudflare.Record("rootDNS", {
   name: siteDomain,
   zoneId: cloudflareZone.zoneId,
   type: "CNAME",
-  value: websiteUrl,
+  value: siteBucket.websiteEndpoint,
   ttl: 1,
   proxied: true,
 })
