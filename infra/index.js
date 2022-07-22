@@ -29,8 +29,8 @@ function publicReadPolicyForBucket(bucketName) {
         "s3:GetObject"
       ],
       Resource: [
-        `arn:aws:s3:::${siteBucket.id}`,
-        `arn:aws:s3:::${siteBucket.id}/*`
+        `arn:aws:s3:::${siteBucket.arn}`,
+        `arn:aws:s3:::${siteBucket.arn}/*`
       ]
     }]
   })
