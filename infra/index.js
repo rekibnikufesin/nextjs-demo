@@ -29,8 +29,8 @@ function publicReadPolicyForBucket(bucketName) {
         "s3:GetObject"
       ],
       Resource: [
-        `arn:aws:s3:::${bucketName}`,
-        `arn:aws:s3:::${bucketName}/*`
+        `arn:aws:s3:::${siteBucket.bucket}`,
+        `arn:aws:s3:::${siteBucket.bucket}/*`
       ]
     }]
   })
@@ -66,6 +66,17 @@ const wwwDNS = new cloudflare.Record("wwwDNS", {
   value: siteDomain,
   ttl: 1,
   proxied: true,
+})
+
+const pageRule = new cloudflare.PageRule("will", {
+  zoneId: getCfZoneId(),
+  target: `${siteDomain}/will`,
+  actions: {
+    forwardingUrl: {
+      statusCode: 302,
+      url: "https://www.willbutton.com"
+    }
+  }
 })
 
 exports.websiteUrl = siteBucket.websiteEndpoint
