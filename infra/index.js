@@ -72,7 +72,10 @@ const pageRule = new cloudflare.PageRule("will", {
   zoneId: getCfZoneId(),
   target: `${siteDomain}/will`,
   actions: {
-    forwardingUrl: "https://www.willbutton.com" // TODO: deploy this
+    forwardingUrl: {
+      statusCode: 302,
+      url: "https://www.willbutton.com"
+    }
   }
 })
 
