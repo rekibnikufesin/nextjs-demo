@@ -43,13 +43,16 @@ const bucketPolicy = new aws.s3.BucketPolicy("bucketPolicy", {
 })
 
 // Cloudflare DNS
-const cloudflareZone = await cloudflare.getZone({
-  name: siteDomain
-})
+async function getCfZoneId() {
+  const cloudflareZone = await cloudflare.getZone({
+    name: siteDomain
+  })
+  return cloudflareZone.id
+}
 
 const rootDNS = new cloudflare.Record("rootDNS", {
   name: siteDomain,
-  zoneId: cloudflareZone.id,
+  zoneId: getCfZoneId(),
   type: "CNAME",
   value: siteBucket.websiteEndpoint,
   ttl: 1,
@@ -58,7 +61,7 @@ const rootDNS = new cloudflare.Record("rootDNS", {
 
 const wwwDNS = new cloudflare.Record("wwwDNS", {
   name: "www",
-  zoneId: cloudflareZone.id,
+  zoneId: getCfZoneId(),
   type: "CNAME",
   value: siteDomain,
   ttl: 1,
