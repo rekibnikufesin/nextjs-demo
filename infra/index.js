@@ -1,10 +1,12 @@
 "use strict";
 const aws = require("@pulumi/aws")
+const cloudflare = require("@pulumi/cloudflare")
 const pulumi = require("@pulumi/pulumi");
+const siteDomain = "opswod.io"
 
 // Create an S3 bucket
-let siteBucket = new aws.s3.Bucket("opswod.io", {
-  name: "opswod.io",
+const siteBucket = new aws.s3.Bucket("opswod.io", {
+  name: siteDomain,
   website: {
     indexDocument: "index.html"
   }
@@ -34,9 +36,36 @@ function publicReadPolicyForBucket(bucketName) {
   })
 }
 
-let bucketPolicy = new aws.s3.BucketPolicy("bucketPolicy", {
+// S3 bucket policy
+const bucketPolicy = new aws.s3.BucketPolicy("bucketPolicy", {
   bucket: siteBucket.bucket,
   policy: siteBucket.bucket.apply(publicReadPolicyForBucket)
+})
+
+// Cloudflare DNS
+async function getCfZoneId() {
+  const cloudflareZone = await cloudflare.getZone({
+    name: siteDomain
+  })
+  return cloudflareZone.id
+}
+
+const rootDNS = new cloudflare.Record("rootDNS", {
+  name: siteDomain,
+  zoneId: getCfZoneId(),
+  type: "CNAME",
+  value: siteBucket.websiteEndpoint,
+  ttl: 1,
+  proxied: true,
+})
+
+const wwwDNS = new cloudflare.Record("wwwDNS", {
+  name: "www",
+  zoneId: getCfZoneId(),
+  type: "CNAME",
+  value: siteDomain,
+  ttl: 1,
+  proxied: true,
 })
 
 exports.websiteUrl = siteBucket.websiteEndpoint
