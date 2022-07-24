@@ -1,10 +1,10 @@
 "use strict";
+const pulumi = require("@pulumi/pulumi");
 const aws = require("@pulumi/aws")
 const cloudflare = require("@pulumi/cloudflare")
-const pulumi = require("@pulumi/pulumi");
 const siteDomain = "opswod.io"
 
-// Create an S3 bucket
+// Create S3 bucket
 const siteBucket = new aws.s3.Bucket("opswod.io", {
   name: siteDomain,
   website: {
@@ -18,15 +18,15 @@ const bucketAcl = new aws.s3.BucketAclV2("bucketAcl", {
   acl: "public-read"
 })
 
-// S3 Bucket Policy
-function publicReadPolicyForBucket(bucketName) {
+// Site bucket policy
+function publicReadPolicy(bucketName) {
   return JSON.stringify({
     Version: "2012-10-17",
     Statement: [{
       Effect: "Allow",
       Principal: "*",
       Action: [
-        "s3:GetObject"
+        "s3:GetObject",
       ],
       Resource: [
         `arn:aws:s3:::${bucketName}`,
@@ -36,10 +36,9 @@ function publicReadPolicyForBucket(bucketName) {
   })
 }
 
-// S3 bucket policy
 const bucketPolicy = new aws.s3.BucketPolicy("bucketPolicy", {
   bucket: siteBucket.bucket,
-  policy: siteBucket.bucket.apply(publicReadPolicyForBucket)
+  policy: siteBucket.bucket.apply(publicReadPolicy)
 })
 
 // Cloudflare DNS
@@ -66,17 +65,6 @@ const wwwDNS = new cloudflare.Record("wwwDNS", {
   value: siteDomain,
   ttl: 1,
   proxied: true,
-})
-
-const pageRule = new cloudflare.PageRule("will", {
-  zoneId: getCfZoneId(),
-  target: `${siteDomain}/will`,
-  actions: {
-    forwardingUrl: {
-      statusCode: 302,
-      url: "https://www.willbutton.com"
-    }
-  }
 })
 
 exports.websiteUrl = siteBucket.websiteEndpoint
