@@ -67,5 +67,16 @@ const wwwDNS = new cloudflare.Record("wwwDNS", {
   proxied: true,
 })
 
+const pageRule = new cloudflare.PageRule("redirect-to-site", {
+  zoneId: getCfZoneId(),
+  target: `${siteDomain}/will`,
+  actions: {
+    forwardingUrl: {
+      statusCode: 302,
+      url: "https://www.willbutton.com"
+    }
+  }
+})
+
 exports.websiteUrl = siteBucket.websiteEndpoint
 exports.bucketName = siteBucket.bucket
