@@ -1,4 +1,4 @@
-name: demo-nextjs
+name: nextjs-blog
 runtime:
   name: nodejs
   options:

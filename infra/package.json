@@ -1,5 +1,5 @@
 {
-    "name": "demo-nextjs",
+    "name": "nextjs-blog",
     "main": "index.js",
     "dependencies": {
         "@pulumi/aws": "^5.10.0",
